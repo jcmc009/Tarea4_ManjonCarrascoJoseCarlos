@@ -22,4 +22,5 @@
         android:name="dam.pmdm.spyrothedragon.ui.CollectiblesFragment"
         android:label="@string/collectibles"
         tools:layout="@layout/fragment_collectibles" />
+
 </navigation>

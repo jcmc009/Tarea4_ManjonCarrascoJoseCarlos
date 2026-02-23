@@ -3,6 +3,9 @@ package dam.pmdm.spyrothedragon
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -43,11 +46,31 @@ class MainActivity : AppCompatActivity() {
                     // En las pantallas de los tabs no mostramos la flecha atrás
                     supportActionBar?.setDisplayHomeAsUpEnabled(false)
                 }
+
                 else -> {
                     // En el resto de pantallas sí
                     supportActionBar?.setDisplayHomeAsUpEnabled(true)
                 }
             }
+        }
+        // --- CÓDIGO NUEVO: PANTALLA DE BIENVENIDA (SPYRO) ---
+
+        // 1. Aseguramos que la capa superpuesta esté visible al arrancar la app
+        binding.guideLayout.visibility = View.VISIBLE
+
+
+        // 2. Buscamos el botón "Comenzar" dentro de la vista inflada
+        val btnComenzar = binding.root.findViewById<Button>(R.id.btn_comenzar)
+
+        // 3. Le damos la acción de clic al botón
+        btnComenzar?.setOnClickListener {
+
+            // Mostramos el "bocadillo" (Toast)
+            Toast.makeText(this, "Has clicado iniciar", Toast.LENGTH_SHORT).show()
+            binding.guideLayout.visibility = View.GONE
+            // IMPORTANTE: Como NO estamos ocultando la capa (no usamos View.GONE),
+            // el diseño se quedará en pantalla. Gracias al clickable="true" que
+            // pusimos en el XML, TODO lo que hay debajo seguirá bloqueado e inaccesible.
         }
     }
 
@@ -55,8 +78,10 @@ class MainActivity : AppCompatActivity() {
         when (menuItem.itemId) {
             R.id.nav_characters ->
                 navController?.navigate(R.id.navigation_characters)
+
             R.id.nav_worlds ->
                 navController?.navigate(R.id.navigation_worlds)
+
             else ->
                 navController?.navigate(R.id.navigation_collectibles)
         }

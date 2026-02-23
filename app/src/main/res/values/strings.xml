@@ -6,4 +6,10 @@
     <string name="title_about">Acerca de</string>
     <string name="text_about">Aplicación desarrollada por \n <b>José Carlos Manjón Carrasco</b></string>
     <string name="accept">Aceptar</string>
+    <string name="welcome">BIENVENIDO</string>
+    <string name="inital_text">Prepárate para explorar el mundo mágico de esta aplicación inspirada en</string>
+    <string name="inital_text_2">Aquí aprenderás a navegar por pestañas llenas de dragones, mundos fascinantes y montones de tesoros brillantes.</string>
+    <string name="inital_text_3">¿Listo para empezar?</string>
+    <string name="inital_text_4">Pulsa \"Comenzar\" y deja que Spyro te lleve volando a través de esta guía interactiva.</string>
+    <string name="inital_text_start">COMENZAR</string>
 </resources>
