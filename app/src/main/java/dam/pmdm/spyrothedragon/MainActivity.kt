@@ -51,11 +51,8 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        // --- CÓDIGO NUEVO: PANTALLA DE BIENVENIDA (SPYRO) ---
 
-        // 1. Aseguramos que la capa superpuesta esté visible al arrancar la app
         binding.guideLayout.visibility = View.VISIBLE
-
 
         // 2. Buscamos el botón "Comenzar" dentro de la vista inflada
         val btnComenzar = binding.root.findViewById<Button>(R.id.btn_comenzar)
@@ -63,35 +60,127 @@ class MainActivity : AppCompatActivity() {
         // 3. Le damos la acción de clic al botón
         btnComenzar?.setOnClickListener {
 
-            // Mostramos el "bocadillo" (Toast)
-            //  Toast.makeText(this, "Has clicado iniciar", Toast.LENGTH_SHORT).show()
-            //    binding.guideLayout.visibility = View.GONE
-            // IMPORTANTE: Como NO estamos ocultando la capa (no usamos View.GONE),
-            // el diseño se quedará en pantalla. Gracias al clickable="true" que
-            // pusimos en el XML, TODO lo que hay debajo seguirá bloqueado e inaccesible.
-            // Transición: Ocultamos Pantalla 1 suavemente
             binding.guideLayout.animate().alpha(0f).setDuration(400).withEndAction {
-                    binding.guideLayout.visibility = View.GONE
+                binding.guideLayout.visibility = View.GONE
 
-                    // AHORA MOSTRAMOS LA PANTALLA 2
-                    binding.guidePersonajesLayout.visibility = View.VISIBLE
+                // AHORA MOSTRAMOS LA PANTALLA 2
+                binding.guidePersonajesLayout.visibility = View.VISIBLE
 
-                    // ANIMACIÓN DEL BOCADILLO: Hacemos que "respire" o palpite
-                    val bocadillo =
-                        binding.guidePersonajesLayout.findViewById<View>(R.id.tv_bocadillo)
-                    val animacionLatido = android.view.animation.AlphaAnimation(0.7f, 1.0f)
-                    animacionLatido.duration = 800
-                    animacionLatido.repeatMode = android.view.animation.Animation.REVERSE
-                    animacionLatido.repeatCount = android.view.animation.Animation.INFINITE
-                    bocadillo.startAnimation(animacionLatido)
-                }.start()
-        }// 4. Acción para cerrar/avanzar desde la PANTALLA 2
+                // Animación del bocadillo
+                val bocadillo =
+                    binding.guidePersonajesLayout.findViewById<View>(R.id.tv_bocadillo)
+                val animacionLatido = android.view.animation.AlphaAnimation(0.7f, 1.0f)
+                animacionLatido.duration = 800
+                animacionLatido.repeatMode = android.view.animation.Animation.REVERSE
+                animacionLatido.repeatCount = android.view.animation.Animation.INFINITE
+                bocadillo.startAnimation(animacionLatido)
+            }.start()
+        }// 4. Acción para cerrar Pantalla 2 y pasar a la Pantalla 3
         binding.guidePersonajesLayout.setOnClickListener {
-            // Cuando el usuario toca la pantalla 2, la ocultamos
+            // Ocultamos la pantalla 2
             binding.guidePersonajesLayout.visibility = View.GONE
 
-            // (Aquí prepararás el código para la Pantalla 3 más adelante)
+            // Hacemos que la app cambie sola a la pestaña "Mundos" de fondo
+            binding.navView.selectedItemId = R.id.nav_worlds
+
+            // Mostramos la Pantalla 3
+            binding.guideMundosLayout.visibility = View.VISIBLE
+
+            // ANIMACIÓN PANTALLA 3: Hacemos que el bocadillo flote (arriba y abajo)
+            val bocadilloMundos: View? =
+                binding.guideMundosLayout.findViewById(R.id.tv_bocadillo_mundos)
+            if (bocadilloMundos != null) {
+                // TranslateAnimation mueve el elemento (de X a X, de Y a Y)
+                val animacionFlotar = android.view.animation.TranslateAnimation(
+                    0f, 0f, // No se mueve en horizontal
+                    0f, -25f // Sube 25 píxeles hacia arriba
+                )
+                animacionFlotar.duration = 1000 // Tarda 1 segundo en subir
+                animacionFlotar.repeatMode =
+                    android.view.animation.Animation.REVERSE // Baja de vuelta
+                animacionFlotar.repeatCount =
+                    android.view.animation.Animation.INFINITE // Bucle infinito
+                bocadilloMundos.startAnimation(animacionFlotar)
+            }
         }
+
+        // 5. Acción para cerrar Pantalla 3 y pasar a la Pantalla 4
+        binding.guideMundosLayout.setOnClickListener {
+            // Ocultamos la pantalla 3
+            binding.guideMundosLayout.visibility = View.GONE
+
+            // Obtenemos el ID del tercer elemento del menú directamente para no fallar
+            val tercerTabId = binding.navView.menu.getItem(2).itemId
+            binding.navView.selectedItemId = tercerTabId
+
+            // Mostramos la Pantalla 4
+            binding.guideColeccionablesLayout.visibility = View.VISIBLE
+
+            // ANIMACIÓN PANTALLA 4: Zoom
+            val bocadilloColeccionables: View? =
+                binding.guideColeccionablesLayout.findViewById(R.id.tv_bocadillo_coleccionables)
+            if (bocadilloColeccionables != null) {
+                val animacionZoom = android.view.animation.ScaleAnimation(
+                    0.95f, 1.05f, // Cambia tamaño en X (ancho)
+                    0.95f, 1.05f, // Cambia tamaño en Y (alto)
+                    android.view.animation.Animation.RELATIVE_TO_SELF, 0.5f, // Centro X
+                    android.view.animation.Animation.RELATIVE_TO_SELF, 0.5f  // Centro Y
+                )
+                animacionZoom.duration = 600 // Medio segundo
+                animacionZoom.repeatMode = android.view.animation.Animation.REVERSE
+                animacionZoom.repeatCount = android.view.animation.Animation.INFINITE
+                bocadilloColeccionables.startAnimation(animacionZoom)
+            }
+        }
+
+        // 6. Acción para cerrar Pantalla 4 y pasar a la Pantalla 5 (Info)
+        binding.guideColeccionablesLayout.setOnClickListener {
+            // Ocultamos la pantalla 4
+            binding.guideColeccionablesLayout.visibility = View.GONE
+
+            // Mostramos la Pantalla 5
+            binding.guideInfoLayout.visibility = View.VISIBLE
+
+            // ANIMACIÓN PANTALLA 5: Balanceo
+            val bocadilloInfo: View? = binding.guideInfoLayout.findViewById(R.id.tv_bocadillo_info)
+            if (bocadilloInfo != null) {
+                val animacionBalanceo = android.view.animation.RotateAnimation(
+                    -3f,
+                    3f, // Rota ligeramente de izquierda a derecha (-3 a 3 grados)
+                    android.view.animation.Animation.RELATIVE_TO_SELF,
+                    0.5f, // Eje X en el centro
+                    android.view.animation.Animation.RELATIVE_TO_SELF,
+                    0.0f  // Eje Y arriba (efecto péndulo)
+                )
+                animacionBalanceo.duration = 400
+                animacionBalanceo.repeatMode = android.view.animation.Animation.REVERSE
+                animacionBalanceo.repeatCount = android.view.animation.Animation.INFINITE
+                bocadilloInfo.startAnimation(animacionBalanceo)
+            }
+        }
+
+        // 7. Acción para FINALIZAR la guía desde la Pantalla 5
+        binding.guideInfoLayout.setOnClickListener {
+            // Ocultamos la última pantalla con un desvanecimiento
+            binding.guideInfoLayout.animate()
+                .alpha(0f)
+                .setDuration(400)
+                .withEndAction {
+                    binding.guideInfoLayout.visibility = View.GONE
+
+                    // Restauramos el alpha por buenas prácticas
+                    binding.guideInfoLayout.alpha = 1f
+
+                    // Mensaje de fin de tutorial
+                    Toast.makeText(
+                        this,
+                        "¡Estás listo para explorar el mundo de Spyro!",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+                .start()
+        }
+
     }
 
     private fun selectedBottomMenu(menuItem: MenuItem): Boolean {

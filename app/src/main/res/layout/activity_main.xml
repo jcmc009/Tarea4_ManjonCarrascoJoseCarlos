@@ -61,4 +61,74 @@
 
     </FrameLayout>
 
+    <FrameLayout
+        android:id="@+id/guideMundosLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#4DFFFFFF"
+        android:clickable="true"
+        android:elevation="10dp"
+        android:focusable="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <include layout="@layout/guide_mundos" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/guideColeccionablesLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#4DFFFFFF"
+        android:clickable="true"
+        android:elevation="10dp"
+        android:focusable="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <include layout="@layout/guide_coleccionables" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/guideInfoLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#4DFFFFFF"
+        android:clickable="true"
+        android:elevation="10dp"
+        android:focusable="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <include layout="@layout/guide_info" />
+
+    </FrameLayout>
+    <FrameLayout
+        android:id="@+id/guideEndLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/magic_spyro"
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="10dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <include layout="@layout/guide_end" />
+
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
