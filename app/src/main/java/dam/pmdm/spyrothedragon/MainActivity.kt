@@ -40,9 +40,7 @@ class MainActivity : AppCompatActivity() {
 
         navController?.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.navigation_characters,
-                R.id.navigation_worlds,
-                R.id.navigation_collectibles -> {
+                R.id.navigation_characters, R.id.navigation_worlds, R.id.navigation_collectibles -> {
                     // En las pantallas de los tabs no mostramos la flecha atrás
                     supportActionBar?.setDisplayHomeAsUpEnabled(false)
                 }
@@ -66,24 +64,43 @@ class MainActivity : AppCompatActivity() {
         btnComenzar?.setOnClickListener {
 
             // Mostramos el "bocadillo" (Toast)
-            Toast.makeText(this, "Has clicado iniciar", Toast.LENGTH_SHORT).show()
-            binding.guideLayout.visibility = View.GONE
+            //  Toast.makeText(this, "Has clicado iniciar", Toast.LENGTH_SHORT).show()
+            //    binding.guideLayout.visibility = View.GONE
             // IMPORTANTE: Como NO estamos ocultando la capa (no usamos View.GONE),
             // el diseño se quedará en pantalla. Gracias al clickable="true" que
             // pusimos en el XML, TODO lo que hay debajo seguirá bloqueado e inaccesible.
+            // Transición: Ocultamos Pantalla 1 suavemente
+            binding.guideLayout.animate().alpha(0f).setDuration(400).withEndAction {
+                    binding.guideLayout.visibility = View.GONE
+
+                    // AHORA MOSTRAMOS LA PANTALLA 2
+                    binding.guidePersonajesLayout.visibility = View.VISIBLE
+
+                    // ANIMACIÓN DEL BOCADILLO: Hacemos que "respire" o palpite
+                    val bocadillo =
+                        binding.guidePersonajesLayout.findViewById<View>(R.id.tv_bocadillo)
+                    val animacionLatido = android.view.animation.AlphaAnimation(0.7f, 1.0f)
+                    animacionLatido.duration = 800
+                    animacionLatido.repeatMode = android.view.animation.Animation.REVERSE
+                    animacionLatido.repeatCount = android.view.animation.Animation.INFINITE
+                    bocadillo.startAnimation(animacionLatido)
+                }.start()
+        }// 4. Acción para cerrar/avanzar desde la PANTALLA 2
+        binding.guidePersonajesLayout.setOnClickListener {
+            // Cuando el usuario toca la pantalla 2, la ocultamos
+            binding.guidePersonajesLayout.visibility = View.GONE
+
+            // (Aquí prepararás el código para la Pantalla 3 más adelante)
         }
     }
 
     private fun selectedBottomMenu(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
-            R.id.nav_characters ->
-                navController?.navigate(R.id.navigation_characters)
+            R.id.nav_characters -> navController?.navigate(R.id.navigation_characters)
 
-            R.id.nav_worlds ->
-                navController?.navigate(R.id.navigation_worlds)
+            R.id.nav_worlds -> navController?.navigate(R.id.navigation_worlds)
 
-            else ->
-                navController?.navigate(R.id.navigation_collectibles)
+            else -> navController?.navigate(R.id.navigation_collectibles)
         }
         return true
     }
@@ -103,10 +120,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showInfoDialog() {
-        AlertDialog.Builder(this)
-            .setTitle(R.string.title_about)
-            .setMessage(R.string.text_about)
-            .setPositiveButton(R.string.accept, null)
-            .show()
+        AlertDialog.Builder(this).setTitle(R.string.title_about).setMessage(R.string.text_about)
+            .setPositiveButton(R.string.accept, null).show()
     }
 }
