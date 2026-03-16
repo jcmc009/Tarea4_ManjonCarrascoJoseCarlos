@@ -30,7 +30,7 @@
         android:id="@+id/guideLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="#D9B948C7"
+        android:background="@drawable/bg_magico_spyro"
         android:clickable="true"
         android:focusable="true"
         android:elevation="10dp"
