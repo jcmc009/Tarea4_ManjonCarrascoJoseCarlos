@@ -20,6 +20,8 @@ class MainActivity : AppCompatActivity() {
     private var navController: NavController? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -54,8 +56,9 @@ class MainActivity : AppCompatActivity() {
 
         binding.guideLayout.visibility = View.VISIBLE
 
+
         // 2. Buscamos el botón "Comenzar" dentro de la vista inflada
-        val btnComenzar = binding.root.findViewById<Button>(R.id.btn_comenzar)
+        var btnComenzar = binding.root.findViewById<Button>(R.id.btn_comenzar)
 
         // 3. Le damos la acción de clic al botón
         btnComenzar?.setOnClickListener {
@@ -67,8 +70,7 @@ class MainActivity : AppCompatActivity() {
                 binding.guidePersonajesLayout.visibility = View.VISIBLE
 
                 // Animación del bocadillo
-                val bocadillo =
-                    binding.guidePersonajesLayout.findViewById<View>(R.id.tv_bocadillo)
+                val bocadillo = binding.guidePersonajesLayout.findViewById<View>(R.id.tv_bocadillo)
                 val animacionLatido = android.view.animation.AlphaAnimation(0.7f, 1.0f)
                 animacionLatido.duration = 800
                 animacionLatido.repeatMode = android.view.animation.Animation.REVERSE
@@ -162,24 +164,164 @@ class MainActivity : AppCompatActivity() {
         // 7. Acción para FINALIZAR la guía desde la Pantalla 5
         binding.guideInfoLayout.setOnClickListener {
             // Ocultamos la última pantalla con un desvanecimiento
-            binding.guideInfoLayout.animate()
+            binding.guideInfoLayout.animate().alpha(0f).setDuration(400).withEndAction {
+                binding.guideInfoLayout.visibility = View.GONE
+
+                // Restauramos el alpha por buenas prácticas
+                binding.guideInfoLayout.alpha = 1f
+
+                // Mensaje de fin de tutorial
+                Toast.makeText(
+                    this, "¡Estás listo para explorar el mundo de Spyro!", Toast.LENGTH_LONG
+                ).show()
+            }.start()
+        }
+// ========================================================
+        // --- NAVEGACIÓN DE LA GUÍA INTERACTIVA (APARTADO B) ---
+        // ========================================================
+
+        // 1. Botón "Comenzar" (Pantalla 1 -> Pantalla 2)
+        btnComenzar = binding.guideLayout.findViewById<Button>(R.id.btn_comenzar)
+        btnComenzar?.setOnClickListener {
+            binding.guideLayout.animate().alpha(0f).setDuration(400).withEndAction {
+                binding.guideLayout.visibility = View.GONE
+                binding.guidePersonajesLayout.visibility = View.VISIBLE
+
+                // Animación bocadillo 2 (Latido)
+                val bocadillo = binding.guidePersonajesLayout.findViewById<View>(R.id.tv_bocadillo)
+                if (bocadillo != null) {
+                    val animacionLatido = android.view.animation.AlphaAnimation(0.7f, 1.0f)
+                    animacionLatido.duration = 800
+                    animacionLatido.repeatMode = android.view.animation.Animation.REVERSE
+                    animacionLatido.repeatCount = android.view.animation.Animation.INFINITE
+                    bocadillo.startAnimation(animacionLatido)
+                }
+            }.start()
+        }
+
+        // 2. Botón "Siguiente" de Personajes (Pantalla 2 -> Pantalla 3)
+        val btnNextPersonajes =
+            binding.guidePersonajesLayout.findViewById<Button>(R.id.btn_next_personajes)
+        btnNextPersonajes?.setOnClickListener {
+            binding.guidePersonajesLayout.visibility = View.GONE
+            binding.navView.selectedItemId = R.id.nav_worlds // Navega en el menú
+            binding.guideMundosLayout.visibility = View.VISIBLE
+
+            // Animación bocadillo 3 (Flotar)
+            val bocadilloMundos =
+                binding.guideMundosLayout.findViewById<View>(R.id.tv_bocadillo_mundos)
+            if (bocadilloMundos != null) {
+                val animacionFlotar = android.view.animation.TranslateAnimation(0f, 0f, 0f, -25f)
+                animacionFlotar.duration = 1000
+                animacionFlotar.repeatMode = android.view.animation.Animation.REVERSE
+                animacionFlotar.repeatCount = android.view.animation.Animation.INFINITE
+                bocadilloMundos.startAnimation(animacionFlotar)
+            }
+        }
+
+        // 3. Botón "Siguiente" de Mundos (Pantalla 3 -> Pantalla 4)
+        val btnNextMundos = binding.guideMundosLayout.findViewById<Button>(R.id.btn_next_mundos)
+        btnNextMundos?.setOnClickListener {
+            binding.guideMundosLayout.visibility = View.GONE
+            binding.navView.selectedItemId =
+                binding.navView.menu.getItem(2).itemId // Navega en el menú
+            binding.guideColeccionablesLayout.visibility = View.VISIBLE
+
+            // Animación bocadillo 4 (Zoom)
+            val bocadilloColeccionables =
+                binding.guideColeccionablesLayout.findViewById<View>(R.id.tv_bocadillo_coleccionables)
+            if (bocadilloColeccionables != null) {
+                val animacionZoom = android.view.animation.ScaleAnimation(
+                    0.95f,
+                    1.05f,
+                    0.95f,
+                    1.05f,
+                    android.view.animation.Animation.RELATIVE_TO_SELF,
+                    0.5f,
+                    android.view.animation.Animation.RELATIVE_TO_SELF,
+                    0.5f
+                )
+                animacionZoom.duration = 600
+                animacionZoom.repeatMode = android.view.animation.Animation.REVERSE
+                animacionZoom.repeatCount = android.view.animation.Animation.INFINITE
+                bocadilloColeccionables.startAnimation(animacionZoom)
+            }
+        }
+        // 7. Acción para pasar de la Pantalla 5 a la Pantalla 6 (Resumen final)
+        binding.guideInfoLayout.setOnClickListener {
+            // Ocultamos la pantalla 5
+            binding.guideInfoLayout.visibility = View.GONE
+
+            // Mostramos la Pantalla 6 final
+            binding.guideEndLayout.visibility = View.VISIBLE
+        }
+
+        // 8. ACCIÓN FINAL: Botón de "¡A JUGAR!" en la Pantalla 6
+        var btnFinalizar = binding.guideEndLayout.findViewById<Button>(R.id.btn_finalizar)
+        btnFinalizar?.setOnClickListener {
+            // Desvanecemos la última capa para revelar la app al completo
+            binding.guideEndLayout.animate()
                 .alpha(0f)
-                .setDuration(400)
+                .setDuration(500)
                 .withEndAction {
-                    binding.guideInfoLayout.visibility = View.GONE
+                    binding.guideEndLayout.visibility = View.GONE
+                    binding.guideEndLayout.alpha = 1f // Restauramos por si acaso
 
-                    // Restauramos el alpha por buenas prácticas
-                    binding.guideInfoLayout.alpha = 1f
-
-                    // Mensaje de fin de tutorial
-                    Toast.makeText(
-                        this,
-                        "¡Estás listo para explorar el mundo de Spyro!",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    Toast.makeText(this, "¡Aventura iniciada!", Toast.LENGTH_SHORT).show()
                 }
                 .start()
         }
+
+        // 4. Botón "Siguiente" de Coleccionables (Pantalla 4 -> Pantalla 5)
+        val btnNextColeccionables =
+            binding.guideColeccionablesLayout.findViewById<Button>(R.id.btn_next_coleccionables)
+        btnNextColeccionables?.setOnClickListener {
+            binding.guideColeccionablesLayout.visibility = View.GONE
+            binding.guideInfoLayout.visibility = View.VISIBLE
+
+            // Animación bocadillo 5 (Balanceo)
+            val bocadilloInfo = binding.guideInfoLayout.findViewById<View>(R.id.tv_bocadillo_info)
+            if (bocadilloInfo != null) {
+                val animacionBalanceo = android.view.animation.RotateAnimation(
+                    -3f,
+                    3f,
+                    android.view.animation.Animation.RELATIVE_TO_SELF,
+                    0.5f,
+                    android.view.animation.Animation.RELATIVE_TO_SELF,
+                    0.0f
+                )
+                animacionBalanceo.duration = 400
+                animacionBalanceo.repeatMode = android.view.animation.Animation.REVERSE
+                animacionBalanceo.repeatCount = android.view.animation.Animation.INFINITE
+                bocadilloInfo.startAnimation(animacionBalanceo)
+            }
+        }
+
+        // 5. Botón "Siguiente" de Info (Pantalla 5 -> Pantalla 6)
+        val btnNextInfo = binding.guideInfoLayout.findViewById<Button>(R.id.btn_next_info)
+        btnNextInfo?.setOnClickListener {
+            binding.guideInfoLayout.visibility = View.GONE
+            binding.guideEndLayout.visibility = View.VISIBLE
+        }
+
+        // 6. Botón "¡A JUGAR!" de la Pantalla Final (Pantalla 6 -> Cierre)
+        btnFinalizar = binding.guideEndLayout.findViewById<Button>(R.id.btn_finalizar)
+        btnFinalizar?.setOnClickListener {
+            binding.guideEndLayout.animate().alpha(0f).setDuration(500).withEndAction {
+                binding.guideEndLayout.visibility = View.GONE
+                binding.guideEndLayout.alpha = 1f // Restauramos por si acaso
+                Toast.makeText(this, "¡Aventura iniciada!", Toast.LENGTH_SHORT).show()
+            }.start()
+        }
+        // ========================================================
+        // --- BOTONES DE OMITIR (APARTADO B) ---
+        // ========================================================
+        // Usamos binding.root para buscar el botón en TODA la pantalla sin fallos
+        binding.root.findViewById<Button>(R.id.btn_omitir_1)?.setOnClickListener { omitirGuia() }
+        binding.root.findViewById<Button>(R.id.btn_omitir_2)?.setOnClickListener { omitirGuia() }
+        binding.root.findViewById<Button>(R.id.btn_omitir_3)?.setOnClickListener { omitirGuia() }
+        binding.root.findViewById<Button>(R.id.btn_omitir_4)?.setOnClickListener { omitirGuia() }
+
 
     }
 
@@ -211,5 +353,17 @@ class MainActivity : AppCompatActivity() {
     private fun showInfoDialog() {
         AlertDialog.Builder(this).setTitle(R.string.title_about).setMessage(R.string.text_about)
             .setPositiveButton(R.string.accept, null).show()
+    }
+
+    // Función para saltarse la guía desde cualquier pantalla
+    private fun omitirGuia() {
+        binding.guideLayout.visibility = View.GONE
+        binding.guidePersonajesLayout.visibility = View.GONE
+        binding.guideMundosLayout.visibility = View.GONE
+        binding.guideColeccionablesLayout.visibility = View.GONE
+        binding.guideInfoLayout.visibility = View.GONE
+        binding.guideEndLayout.visibility = View.GONE
+
+        Toast.makeText(this, "Guía omitida. ¡A jugar!", Toast.LENGTH_SHORT).show()
     }
 }
