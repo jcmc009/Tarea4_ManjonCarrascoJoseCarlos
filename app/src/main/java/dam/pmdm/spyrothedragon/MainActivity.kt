@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var navController: NavController? = null
-
+    private var mediaPlayer: android.media.MediaPlayer? = null
     override fun onCreate(savedInstanceState: Bundle?) {
 
 
@@ -53,8 +53,17 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+// --- COMPROBAR SharedPreferences (MOSTRADO ÚNICO) ---
+        val sharedPref = getSharedPreferences("SpyroAppPrefs", MODE_PRIVATE)
+        val guiaVista = sharedPref.getBoolean("guia_vista", false) // false es el valor por defecto
 
-        binding.guideLayout.visibility = View.VISIBLE
+        if (!guiaVista) {
+            // Si NO se ha visto (false), encendemos la guía
+            binding.guideLayout.visibility = View.VISIBLE
+            reproducirSonido(R.raw.sonido_opening)
+        }
+        reproducirSonido(R.raw.sonido_opening)
+        // Si ya se ha visto (true), no hacemos nada porque en los XML ya le pusimos visibility="gone" a todas
 
 
         // 2. Buscamos el botón "Comenzar" dentro de la vista inflada
@@ -206,7 +215,7 @@ class MainActivity : AppCompatActivity() {
             binding.guidePersonajesLayout.visibility = View.GONE
             binding.navView.selectedItemId = R.id.nav_worlds // Navega en el menú
             binding.guideMundosLayout.visibility = View.VISIBLE
-
+            reproducirSonido(R.raw.sonido_avanzar)
             // Animación bocadillo 3 (Flotar)
             val bocadilloMundos =
                 binding.guideMundosLayout.findViewById<View>(R.id.tv_bocadillo_mundos)
@@ -226,7 +235,7 @@ class MainActivity : AppCompatActivity() {
             binding.navView.selectedItemId =
                 binding.navView.menu.getItem(2).itemId // Navega en el menú
             binding.guideColeccionablesLayout.visibility = View.VISIBLE
-
+            reproducirSonido(R.raw.sonido_avanzar)
             // Animación bocadillo 4 (Zoom)
             val bocadilloColeccionables =
                 binding.guideColeccionablesLayout.findViewById<View>(R.id.tv_bocadillo_coleccionables)
@@ -249,6 +258,7 @@ class MainActivity : AppCompatActivity() {
         }
         // 7. Acción para pasar de la Pantalla 5 a la Pantalla 6 (Resumen final)
         binding.guideInfoLayout.setOnClickListener {
+            reproducirSonido(R.raw.sonido_avanzar)
             // Ocultamos la pantalla 5
             binding.guideInfoLayout.visibility = View.GONE
 
@@ -260,16 +270,13 @@ class MainActivity : AppCompatActivity() {
         var btnFinalizar = binding.guideEndLayout.findViewById<Button>(R.id.btn_finalizar)
         btnFinalizar?.setOnClickListener {
             // Desvanecemos la última capa para revelar la app al completo
-            binding.guideEndLayout.animate()
-                .alpha(0f)
-                .setDuration(500)
-                .withEndAction {
-                    binding.guideEndLayout.visibility = View.GONE
-                    binding.guideEndLayout.alpha = 1f // Restauramos por si acaso
-
-                    Toast.makeText(this, "¡Aventura iniciada!", Toast.LENGTH_SHORT).show()
-                }
-                .start()
+            binding.guideEndLayout.animate().alpha(0f).setDuration(500).withEndAction {
+                binding.guideEndLayout.visibility = View.GONE
+                binding.guideEndLayout.alpha = 1f // Restauramos por si acaso
+                marcarGuiaCompletada()
+                reproducirSonido(R.raw.sonido_completar_guia)
+                Toast.makeText(this, "¡Aventura iniciada!", Toast.LENGTH_SHORT).show()
+            }.start()
         }
 
         // 4. Botón "Siguiente" de Coleccionables (Pantalla 4 -> Pantalla 5)
@@ -278,7 +285,7 @@ class MainActivity : AppCompatActivity() {
         btnNextColeccionables?.setOnClickListener {
             binding.guideColeccionablesLayout.visibility = View.GONE
             binding.guideInfoLayout.visibility = View.VISIBLE
-
+            reproducirSonido(R.raw.sonido_avanzar)
             // Animación bocadillo 5 (Balanceo)
             val bocadilloInfo = binding.guideInfoLayout.findViewById<View>(R.id.tv_bocadillo_info)
             if (bocadilloInfo != null) {
@@ -309,7 +316,8 @@ class MainActivity : AppCompatActivity() {
         btnFinalizar?.setOnClickListener {
             binding.guideEndLayout.animate().alpha(0f).setDuration(500).withEndAction {
                 binding.guideEndLayout.visibility = View.GONE
-                binding.guideEndLayout.alpha = 1f // Restauramos por si acaso
+                binding.guideEndLayout.alpha = 1f
+                marcarGuiaCompletada()
                 Toast.makeText(this, "¡Aventura iniciada!", Toast.LENGTH_SHORT).show()
             }.start()
         }
@@ -321,8 +329,14 @@ class MainActivity : AppCompatActivity() {
         binding.root.findViewById<Button>(R.id.btn_omitir_2)?.setOnClickListener { omitirGuia() }
         binding.root.findViewById<Button>(R.id.btn_omitir_3)?.setOnClickListener { omitirGuia() }
         binding.root.findViewById<Button>(R.id.btn_omitir_4)?.setOnClickListener { omitirGuia() }
+    }
 
-
+    // Función que guarda en la memoria del móvil que ya hemos visto la guía
+    private fun marcarGuiaCompletada() {
+        val sharedPref = getSharedPreferences("SpyroAppPrefs", MODE_PRIVATE)
+        val editor = sharedPref.edit()
+        editor.putBoolean("guia_vista", true)
+        editor.apply() // Guarda los cambios
     }
 
     private fun selectedBottomMenu(menuItem: MenuItem): Boolean {
@@ -363,7 +377,24 @@ class MainActivity : AppCompatActivity() {
         binding.guideColeccionablesLayout.visibility = View.GONE
         binding.guideInfoLayout.visibility = View.GONE
         binding.guideEndLayout.visibility = View.GONE
+        marcarGuiaCompletada()
+        Toast.makeText(this, "Guía omitida", Toast.LENGTH_SHORT).show()
+    }
 
-        Toast.makeText(this, "Guía omitida. ¡A jugar!", Toast.LENGTH_SHORT).show()
+    // FUNCIÓN PARA REPRODUCIR SONIDOS (APARTADO D)
+
+    private fun reproducirSonido(sonidoId: Int) {
+        // 1. Si ya había un sonido sonando de antes, lo paramos y lo borramos
+        mediaPlayer?.release()
+
+        // 2. Creamos el nuevo sonido y lo guardamos en nuestra variable global
+        mediaPlayer = android.media.MediaPlayer.create(this, sonidoId)
+        mediaPlayer?.start()
+
+        // 3. Cuando termine de sonar, liberamos la memoria correctamente
+        mediaPlayer?.setOnCompletionListener {
+            it.release()
+            mediaPlayer = null
+        }
     }
 }
