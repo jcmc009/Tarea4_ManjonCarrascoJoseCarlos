@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import dam.pmdm.spyrothedragon.MainActivity
 import dam.pmdm.spyrothedragon.R
 import dam.pmdm.spyrothedragon.models.World
 
@@ -37,6 +38,34 @@ class WorldsAdapter(
 
         val drawableRes = worldImages[world.image] ?: R.drawable.placeholder
         holder.imageImageView.setImageResource(drawableRes)
+
+        // LÓGICA DEL EASTER EGG (3 CLICS) EN ESTE MUNDO
+
+        holder.itemView.setOnClickListener {
+            // 1. Calculamos la hora actual en milisegundos
+            val tiempoActual = System.currentTimeMillis()
+
+            // 2. Si pulsa en menos de 500ms desde el último clic, sumamos 1
+            if (tiempoActual - holder.tiempoUltimoClic < 500) {
+                holder.contadorClics++
+            } else {
+                // Si ha tardado mucho, reiniciamos a 1
+                holder.contadorClics = 1
+            }
+
+            // Guardamos el tiempo para compararlo en el siguiente clic
+            holder.tiempoUltimoClic = tiempoActual
+
+            // 3. Comprobamos si ha hecho el triple clic
+            if (holder.contadorClics == 3) {
+                // ¡BINGO! Reseteamos el contador por si quiere volver a hacerlo más tarde
+                holder.contadorClics = 0
+
+                // Llamamos a la MainActivity para que ponga el vídeo
+                val mainActivity = holder.itemView.context as? MainActivity
+                mainActivity?.reproducirVideo(R.raw.spyro)
+            }
+        }
     }
 
     override fun getItemCount(): Int = list.size
@@ -44,5 +73,12 @@ class WorldsAdapter(
     class WorldsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val nameTextView: TextView = itemView.findViewById(R.id.name)
         val imageImageView: ImageView = itemView.findViewById(R.id.image)
+
+        // Variables para controlar el Easter Egg guardadas en cada tarjeta de mundo
+        var contadorClics = 0
+        var tiempoUltimoClic = 0L
     }
 }
+
+
+

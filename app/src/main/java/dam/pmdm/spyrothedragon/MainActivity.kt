@@ -1,5 +1,6 @@
 package dam.pmdm.spyrothedragon
 
+import android.net.Uri.parse
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -395,6 +396,47 @@ class MainActivity : AppCompatActivity() {
         mediaPlayer?.setOnCompletionListener {
             it.release()
             mediaPlayer = null
+        }
+    }
+
+    // FUNCIÓN REPRODUCIR VIDEOS
+    fun reproducirVideo(videoResId: Int) {
+        // 1. Hacemos visible la capa negra del vídeo
+        binding.videoLayout.visibility = View.VISIBLE
+        // 2. Buscamos la ruta de tu vídeo dentro de la carpeta raw
+        val videoUri = parse("android.resource://$packageName/$videoResId")
+
+        // 3. Se lo cargamos al reproductor y le damos al Play
+        val videoView = binding.videoLayout.findViewById<android.widget.VideoView>(R.id.videoView)
+        videoView.setVideoURI(videoUri)
+        videoView.start()
+
+        // 4. Cuando el vídeo termina, cultamos la capa automáticamente
+        videoView.setOnCompletionListener {
+            binding.videoLayout.visibility = View.GONE
+        }
+    }
+
+
+    // EASTER EGG: MAGIA DE RIPTO (CANVAS)
+
+    fun mostrarMagiaRipto() {
+        // Encontramos las vistas
+        val magicLayout = findViewById<View>(R.id.riptoMagicLayout)
+        val canvasView = findViewById<RiptoMagicView>(R.id.riptoCanvasView)
+        val btnCerrar = findViewById<Button>(R.id.btn_cerrar_ripto)
+
+        // Mostramos la capa y arrancamos la animación matemática
+        magicLayout.visibility = View.VISIBLE
+        canvasView.startAnimation()
+
+        // (Opcional) Si quieres añadir un sonido épico aquí, quita las barras de la siguiente línea:
+        // reproducirSonido(R.raw.sonido_opening)
+
+        // Botón para cerrar y detener la animación
+        btnCerrar.setOnClickListener {
+            canvasView.stopAnimation()
+            magicLayout.visibility = View.GONE
         }
     }
 }

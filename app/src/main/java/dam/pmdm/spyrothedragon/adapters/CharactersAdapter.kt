@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import dam.pmdm.spyrothedragon.MainActivity
 import dam.pmdm.spyrothedragon.R
 import dam.pmdm.spyrothedragon.models.Character
 
@@ -32,6 +33,25 @@ class CharactersAdapter(
 
         val drawableRes = characterImages[character.image] ?: R.drawable.placeholder
         holder.imageImageView.setImageResource(drawableRes)
+
+        // --- EASTER EGG: PULSACIÓN LARGA EN RIPTO ---
+
+        holder.itemView.setOnLongClickListener {
+            // Comprobamos si el personaje actual es Ripto
+            // (Usamos equals con ignoreCase=true por si en lista pone "ripto" o "Ripto")
+            if (character.name.equals("Ripto", ignoreCase = true)) {
+
+                // Obtenemos la Activity principal donde está nuestra función mágica
+                val context = holder.itemView.context
+                if (context is MainActivity) {
+                    context.mostrarMagiaRipto() // ¡Desatamos la magia!
+                }
+
+                true // Retornamos 'true' para decirle a Android: "Ya he gestionado este clic largo"
+            } else {
+                false // Si no es Ripto, ignoramos la pulsación larga
+            }
+        }
     }
 
     override fun getItemCount(): Int = list.size
