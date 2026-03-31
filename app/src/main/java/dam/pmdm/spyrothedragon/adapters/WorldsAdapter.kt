@@ -42,7 +42,7 @@ class WorldsAdapter(
         // LÓGICA DEL EASTER EGG (3 CLICS) EN ESTE MUNDO
 
         holder.itemView.setOnClickListener {
-            // 1. Calculamos la hora actual en milisegundos
+            // 1. Calculamos la hora actual en milisegundos para tomarla como referencia
             val tiempoActual = System.currentTimeMillis()
 
             // 2. Si pulsa en menos de 500ms desde el último clic, sumamos 1

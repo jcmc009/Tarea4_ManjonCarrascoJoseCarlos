@@ -65,8 +65,6 @@ class MainActivity : AppCompatActivity() {
         }
         reproducirSonido(R.raw.sonido_opening)
         // Si ya se ha visto (true), no hacemos nada porque en los XML ya le pusimos visibility="gone" a todas
-
-
         // 2. Buscamos el botón "Comenzar" dentro de la vista inflada
         var btnComenzar = binding.root.findViewById<Button>(R.id.btn_comenzar)
 
@@ -186,9 +184,8 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             }.start()
         }
-// ========================================================
-        // --- NAVEGACIÓN DE LA GUÍA INTERACTIVA (APARTADO B) ---
-        // ========================================================
+
+        // --- NAVEGACIÓN DE LA GUÍA INTERACTIVA ---
 
         // 1. Botón "Comenzar" (Pantalla 1 -> Pantalla 2)
         btnComenzar = binding.guideLayout.findViewById<Button>(R.id.btn_comenzar)
@@ -322,9 +319,9 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "¡Aventura iniciada!", Toast.LENGTH_SHORT).show()
             }.start()
         }
-        // ========================================================
-        // --- BOTONES DE OMITIR (APARTADO B) ---
-        // ========================================================
+
+        // --- BOTONES DE OMITIR ---
+
         // Usamos binding.root para buscar el botón en TODA la pantalla sin fallos
         binding.root.findViewById<Button>(R.id.btn_omitir_1)?.setOnClickListener { omitirGuia() }
         binding.root.findViewById<Button>(R.id.btn_omitir_2)?.setOnClickListener { omitirGuia() }
@@ -417,7 +414,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     // EASTER EGG: MAGIA DE RIPTO (CANVAS)
 
     fun mostrarMagiaRipto() {
@@ -429,9 +425,6 @@ class MainActivity : AppCompatActivity() {
         // Mostramos la capa y arrancamos la animación matemática
         magicLayout.visibility = View.VISIBLE
         canvasView.startAnimation()
-
-        // (Opcional) Si quieres añadir un sonido épico aquí, quita las barras de la siguiente línea:
-        // reproducirSonido(R.raw.sonido_opening)
 
         // Botón para cerrar y detener la animación
         btnCerrar.setOnClickListener {
